@@ -10,7 +10,8 @@ object Signup extends Controller {
     tuple(
       "email" -> email,
       "password" -> text,
-      "retyped" -> text
+      "retyped" -> text,
+      "invitation" -> text
   ))
 
   def post = Action { Unauthorized("") }
