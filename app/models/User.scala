@@ -1,7 +1,9 @@
 package models
 
-case class User()
+case class User(
+  id:Long
+)
 
 object User {
-  
+
 }
