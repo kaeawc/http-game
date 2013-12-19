@@ -23,4 +23,13 @@ case class Character(
 
 object Character {
 
+  val chracters =
+    long("id") ~
+    str("name") ~
+    long("user") ~
+    date("created") map {
+      case        id~name~user~created =>
+        Character(id,name,user,created)
+    }
+
 }

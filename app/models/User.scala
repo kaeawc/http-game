@@ -24,4 +24,14 @@ case class User(
 
 object User {
 
+  val users =
+    long("id") ~
+    str("email") ~
+    str("password") ~
+    str("salt") ~
+    date("created") map {
+      case   id~email~password~salt~created =>
+        User(id,email,password,salt,created)
+    }
+
 }
