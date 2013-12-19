@@ -1,7 +1,8 @@
 package models
 
 case class User(
-  id:Long
+  id   : Long,
+  name : String
 )
 
 object User {
