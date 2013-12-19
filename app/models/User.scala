@@ -17,6 +17,8 @@ import ExecutionContext.Implicits.global
 case class User(
   id       : Long,
   email    : String,
+  password : String,
+  salt     : String,
   created  : Date
 )
 
