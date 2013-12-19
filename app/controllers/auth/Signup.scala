@@ -6,6 +6,13 @@ import play.api.data.Forms._
 
 object Signup extends Controller {
 
+  val form = Form(
+    tuple(
+      "email" -> email,
+      "password" -> text,
+      "retyped" -> text
+  ))
+
   def post = Action { Unauthorized("") }
 
 }
