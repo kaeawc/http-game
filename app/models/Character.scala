@@ -15,9 +15,10 @@ import scala.concurrent.{Future,ExecutionContext}
 import ExecutionContext.Implicits.global
 
 case class Character(
-  id   : Long,
-  name : String,
-  user : Long
+  id       : Long,
+  name     : String,
+  user     : Long,
+  created  : Date
 )
 
 object Character {

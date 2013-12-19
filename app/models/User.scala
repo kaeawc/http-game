@@ -15,8 +15,9 @@ import scala.concurrent.{Future,ExecutionContext}
 import ExecutionContext.Implicits.global
 
 case class User(
-  id    : Long,
-  email : String
+  id       : Long,
+  email    : String,
+  created  : Date
 )
 
 object User {
