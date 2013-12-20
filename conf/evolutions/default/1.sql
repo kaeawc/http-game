@@ -9,6 +9,13 @@ CREATE TABLE user (
   created   DATETIME     NOT NULL
 );
 
+CREATE TABLE character (
+  id        BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  name      VARCHAR(255) NOT NULL,
+  user      BIGINT       NOT NULL,
+  created   DATETIME     NOT NULL
+);
+
 CREATE TABLE user_session (
   id        BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
   user      BIGINT       NOT NULL,
