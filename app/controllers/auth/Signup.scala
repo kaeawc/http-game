@@ -4,6 +4,7 @@ import models.User
 
 import play.api.mvc._
 import play.api.data._
+import play.api.libs.json._
 import play.api.data.Forms._
 
 import scala.concurrent.{Future,ExecutionContext}
@@ -29,12 +30,12 @@ object Signup extends Controller {
         val (email,password,retyped,invitation) = form.get
 
         User.create(email, password) map {
-          case Some(user:User) => Created("")
-          case _ => Unauthorized("")
+          case Some(user:User) => Created(user.toPublic)
+          case _ => InternalServerError(Json.obj("reason" -> "Could not create a User."))
         }
       }
       case _ =>
-        Future { BadRequest("") }
+        Future { BadRequest(Json.obj("reason" -> "")) }
     }
   }
 }
