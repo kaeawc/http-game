@@ -14,6 +14,15 @@ object Signup extends Controller {
       "invitation" -> text
   ))
 
-  def post = Action { Unauthorized("") }
+  def post = Action { 
 
+    implicit request =>
+
+    form.bindFromRequest match {
+      case form:Form[(String,String,String,String)] if !form.hasErrors =>
+        Created("")
+      case _ =>
+        Unauthorized("")
+    }
+  }
 }
