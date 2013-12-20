@@ -150,4 +150,14 @@ object User {
     }
   }
 
+  def authenticate(email:String,password:String) =
+    getByEmail(email) map {
+      case Some(user:User) => {
+        if(password == user.password)
+          Some(user)
+        else
+          None
+      }
+      case _ => None
+    }
 }
