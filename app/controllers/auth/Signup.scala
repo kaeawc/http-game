@@ -1,8 +1,13 @@
 package controllers
 
+import models.User
+
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+
+import scala.concurrent.{Future,ExecutionContext}
+import ExecutionContext.Implicits.global
 
 object Signup extends Controller {
 
@@ -14,7 +19,7 @@ object Signup extends Controller {
       "invitation" -> text
   ))
 
-  def post = Action { 
+  def post = Action.async { 
 
     implicit request =>
 
@@ -23,13 +28,13 @@ object Signup extends Controller {
 
         val (email,password,retyped,invitation) = form.get
 
-        User.create(form.email, form.password) map {
+        User.create(email, password) map {
           case Some(user:User) => Created("")
           case _ => Unauthorized("")
         }
       }
       case _ =>
-        BadRequest("")
+        Future { BadRequest("") }
     }
   }
 }
