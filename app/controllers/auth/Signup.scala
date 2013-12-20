@@ -19,10 +19,17 @@ object Signup extends Controller {
     implicit request =>
 
     form.bindFromRequest match {
-      case form:Form[(String,String,String,String)] if !form.hasErrors =>
-        Created("")
+      case form:Form[(String,String,String,String)] if !form.hasErrors => {
+
+        val (email,password,retyped,invitation) = form.get
+
+        User.create(form.email, form.password) map {
+          case Some(user:User) => Created("")
+          case _ => Unauthorized("")
+        }
+      }
       case _ =>
-        Unauthorized("")
+        BadRequest("")
     }
   }
 }
