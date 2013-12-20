@@ -20,7 +20,15 @@ case class User(
   password : String,
   salt     : String,
   created  : Date
-)
+) {
+
+  def toPublic = Json.obj(
+    "id"      -> id,
+    "email"   -> email,
+    "created" -> created
+  )
+
+}
 
 object User {
 

@@ -19,7 +19,7 @@ object Signup extends Controller {
       "invitation" -> text
   ))
 
-  def post = Action.async { 
+  def post = Action.async {
 
     implicit request =>
 
