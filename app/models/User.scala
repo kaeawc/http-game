@@ -32,6 +32,8 @@ case class User(
 
 object User {
 
+  import crypto.Hexadecimal._
+
   val users =
     long("id") ~
     str("email") ~
@@ -99,8 +101,8 @@ object User {
 
   def create(email:String,password:String):Future[Option[User]] = {
 
-    val salt              = "asdf"
-    val hashedPassword    = "asdf"
+    val salt              = crypto.PBKDF2.createSalt()
+    val hashedPassword    = crypto.PBKDF2.hash(password,salt)
     val storedSalt:String = salt
     val created           = new Date()
 
@@ -153,6 +155,9 @@ object User {
   def authenticate(email:String,password:String) =
     getByEmail(email) map {
       case Some(user:User) => {
+
+        val hashedPassword:String = crypto.PBKDF2.hash(password,user.salt)
+
         if(password == user.password)
           Some(user)
         else
