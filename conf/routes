@@ -1,4 +1,8 @@
 
 GET     /                           controllers.Application.index
 
+POST    /signup                     controllers.auth.Signup.post
+POST    /login                      controllers.auth.Login.post
+POST    /logout                     controllers.auth.Logout.post
+
 GET     /*file                      controllers.Assets.at(path="/public", file)

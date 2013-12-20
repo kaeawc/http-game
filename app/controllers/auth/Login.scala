@@ -1,4 +1,4 @@
-package controllers
+package controllers.auth
 
 import models.User
 

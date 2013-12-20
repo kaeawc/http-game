@@ -1,4 +1,4 @@
-package controllers
+package controllers.auth
 
 import play.api.mvc._
 import play.api.libs.json._
