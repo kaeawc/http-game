@@ -1,6 +1,8 @@
 package forms
 
 case class Signup(
-  email    : String,
-  password : String
+  email      : String,
+  password   : String,
+  retyped    : String,
+  invitation : String
 )
