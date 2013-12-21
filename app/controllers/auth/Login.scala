@@ -17,7 +17,7 @@ object Login extends Controller {
   val form = Form(
     mapping(
       "email" -> email,
-      "password" -> text
+      "password" -> text(minLength = 6)
     )(forms.Login.apply)(forms.Login.unapply)
   )
 
