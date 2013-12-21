@@ -10,8 +10,8 @@ import play.api.libs.json._
 
 import java.util.Date
 
-import scala.concurrent.{Future,ExecutionContext}
-
+import scala.concurrent.duration._
+import scala.concurrent.{Await,Future,ExecutionContext}
 import ExecutionContext.Implicits.global
 
 case class Invitation(
@@ -101,6 +101,10 @@ object Invitation {
         'code -> code
       ).as(invitations.singleOpt)
     }
+  }
+
+  def verify(code:String) = {
+    Await.result(getByCode(code),5 seconds).isDefined
   }
 
   def countAll = Future {

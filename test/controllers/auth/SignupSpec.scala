@@ -49,37 +49,70 @@ class SignupSpec extends Specification {
       actual mustEqual expected
     }
 
-    "respond with Unauthorized when email and password don't match an existing User" in new App {
+    "respond with BadRequest when email and password don't match an existing User" in new App {
 
       val request = FakeRequest(POST, "/signup")
 
       val data = Json.obj(
         "email"      -> "some.one@example.com",
-        "password"   -> "asdfasdf",
-        "retyped"    -> "fdsafdsa",
+        "passwords"  -> Json.obj(
+          "password"   -> "asdfasdf",
+          "retyped"    -> "fdsafdsa"
+        ),
         "invitation" -> "asdfasdf"
       )
 
       val response = route(request,data).get
 
-      val expected = Json.obj("reason" -> "Could not authenticate User.")
+      val expected = Json.obj("reason" -> "Invalid request to Signup")
 
       val actual = Json.parse(contentAsString(response))
 
-      status(response) mustEqual 401
+      status(response) mustEqual 400
+
+      actual mustEqual expected
+    }
+
+    "respond with Unauthorized when there is no matching Invitation" in new App {
+
+      val request = FakeRequest(POST, "/signup")
+
+      val data = Json.obj(
+        "email"      -> "some.one@example.com",
+        "passwords"  -> Json.obj(
+          "password"   -> "asdfasdf",
+          "retyped"    -> "asdfasdf"
+        ),
+        "invitation" -> "asdfasdf"
+      )
+
+      val response = route(request,data).get
+
+      val expected = Json.obj("reason" -> "Invalid request to Signup")
+
+      val actual = Json.parse(contentAsString(response))
+
+      status(response) mustEqual 400
 
       actual mustEqual expected
     }
 
     "respond with Accepted when email and password match an existing User" in new App {
 
+      val invitation = sync { Invitation.create(1) }
+
+      if (invitation.isEmpty)
+        failure("Couldn't create the Invitation")
+
       val request = FakeRequest(POST, "/signup")
 
       val data = Json.obj(
         "email"      -> "some.one@example.com",
-        "password"   -> "asdfasdf",
-        "retyped"    -> "asdfasdf",
-        "invitation" -> "asdfasdf"
+        "passwords"  -> Json.obj(
+          "password"   -> "asdfasdf",
+          "retyped"    -> "asdfasdf"
+        ),
+        "invitation" -> invitation.get.code
       )
 
       val response = route(request,data).get

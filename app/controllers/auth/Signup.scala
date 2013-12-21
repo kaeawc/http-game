@@ -17,9 +17,37 @@ object Signup extends Controller {
   val form = Form(
     mapping(
       "email" -> email,
-      "password" -> text,
-      "retyped" -> text,
-      "invitation" -> text
+      "passwords" -> tuple(
+        "password" -> text(minLength = 6),
+        "retyped" -> text
+      ).verifying(
+        "Passwords don't match", passwords => {
+
+
+          val hasCode = passwords._1 == passwords._2
+
+          if(hasCode)
+            println("has good password")
+          else
+            println("no good password")
+
+          hasCode
+        }
+      ),
+      "invitation" -> text.verifying(
+        "Invalid Invitation code", invitation => {
+
+          val hasCode = Invitation.verify(invitation)
+
+          if(hasCode)
+            println("has invitation code")
+          else
+            println("no invitation code")
+          
+
+          hasCode
+        }
+      )
     )(forms.Signup.apply)(forms.Signup.unapply)
   )
 
@@ -32,31 +60,23 @@ object Signup extends Controller {
 
         val signup = form.get
 
-        Invitation.getByCode(signup.invitation) flatMap {
-          case Some(invitation:Invitation) => {
+        User.create(signup.email, signup.passwords._1) map {
+          case Some(user:User) => {
 
-            User.create(signup.email, signup.password) map {
-              case Some(user:User) => {
+            val cookie = new Cookie(
+              name        = "auth",
+              value       = encrypt(user.id),
+              maxAge      = Some(31536000),
+              path        = "/",
+              domain      = None,
+              secure      = false,
+              httpOnly    = true
+            )
 
-                val cookie = new Cookie(
-                  name        = "auth",
-                  value       = encrypt(user.id),
-                  maxAge      = Some(31536000),
-                  path        = "/",
-                  domain      = None,
-                  secure      = false,
-                  httpOnly    = true
-                )
-
-                Created(user.toPublic).withCookies(cookie)
-              }
-              case _ => InternalServerError(Json.obj("reason" -> "Could not create a User."))
-            }
+            Created(user.toPublic).withCookies(cookie)
           }
-          case _ =>
-            Future { Unauthorized(Json.obj("reason" -> "Could not authenticate User.")) }
+          case _ => InternalServerError(Json.obj("reason" -> "Could not create a User"))
         }
-
       }
       case _ =>
         Future { BadRequest(Json.obj("reason" -> "Invalid request to Signup")) }
