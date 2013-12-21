@@ -2,10 +2,7 @@ package models
 
 import test._
 
-import org.specs2.mutable._
-import org.specs2.runner._
-import org.junit.runner._
-
+import play.api.mvc._
 import play.api.test._
 import play.api.test.Helpers._
 
@@ -23,6 +20,22 @@ class LogoutSpec extends Specification {
       val response = route(request).get
 
       status(response) mustEqual OK
+
+      val expected = Cookie(
+        "auth","",Some(-86399),"/",None,false,true
+      )
+
+      cookies(response).get("auth") match {
+        case Some(actual:Cookie) => {
+          actual.name mustEqual expected.name
+          actual.value mustEqual expected.value
+          actual.path mustEqual expected.path
+          actual.domain must beNone
+          actual.secure mustEqual expected.secure
+          actual.httpOnly mustEqual expected.httpOnly
+        }
+        case _ => failure("Should have responded with an expiration cookie.")
+      }
     }
   }
 }
