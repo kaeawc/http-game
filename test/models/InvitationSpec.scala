@@ -11,22 +11,26 @@ class InvitationSpec extends Specification {
 
     "return a single invitation" in new App {
 
-      sync(Invitation.create(1)) match {
-        case Some(expected:Invitation) => {
-          Invitation.getById(1) map {
-            case Some(actual:Invitation) => {
-              expected mustEqual actual
-            }
-            case _ => failure("Couldn't retrieve the invitation who matches this user address.")
-          }
+      val expected = sync(Invitation.create(1))
+
+      val actual = expected match {
+        case Some(expected:Invitation) => sync {
+          Invitation.getById(1)
         }
         case _ => failure("Couldn't create a invitation")
+      }
+
+      actual match {
+        case Some(actual:Invitation) => {
+          actual mustEqual expected.get
+        }
+        case _ => failure("Couldn't retrieve the invitation who matches this user address.")
       }
     }
 
     "return nothing if the invitation does not exist" in new App {
 
-      Invitation.getById(1) map {
+      sync { Invitation.getById(1) } match {
         case Some(invitation:Invitation) => failure("This invitation should not exist.")
         case _ => success
       }
