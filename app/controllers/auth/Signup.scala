@@ -21,32 +21,10 @@ object Signup extends Controller {
         "password" -> text(minLength = 6),
         "retyped" -> text
       ).verifying(
-        "Passwords don't match", passwords => {
-
-
-          val hasCode = passwords._1 == passwords._2
-
-          if(hasCode)
-            println("has good password")
-          else
-            println("no good password")
-
-          hasCode
-        }
+        "Passwords don't match", passwords => passwords._1 == passwords._2
       ),
       "invitation" -> text.verifying(
-        "Invalid Invitation code", invitation => {
-
-          val hasCode = Invitation.verify(invitation)
-
-          if(hasCode)
-            println("has invitation code")
-          else
-            println("no invitation code")
-          
-
-          hasCode
-        }
+        "Invalid Invitation code", invitation => Invitation.verify(invitation)
       )
     )(forms.Signup.apply)(forms.Signup.unapply)
   )
