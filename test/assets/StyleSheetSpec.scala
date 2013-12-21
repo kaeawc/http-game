@@ -20,18 +20,22 @@ class StyleSheetSpec extends Specification {
       val response = route(request).get
 
       status(response) mustEqual OK
+
+      contentType(response) must beSome("text/css")
     }
   }
 
-  "/css/bootstrap.css" should {
+  "/css/bootstrap.min.css" should {
 
     "load bootstrap style sheet" in new App {
 
-      val request = FakeRequest(GET, "/css/bootstrap.css")
+      val request = FakeRequest(GET, "/css/bootstrap.min.css")
 
       val response = route(request).get
 
       status(response) mustEqual OK
+
+      contentType(response) must beSome("text/css")
     }
   }
 }
