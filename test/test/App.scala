@@ -31,7 +31,8 @@ object App {
       "db.default.driver" -> "org.h2.Driver",
       "db.default.url" -> "jdbc:h2:mem:play;MODE=MYSQL",
       "evolutionplugin" -> "enabled",
-      "applyEvolutions.default" -> "true"
+      "applyEvolutions.default" -> "true",
+      "applyDownEvolutions.default" -> "true"
     )
   )
 

@@ -61,6 +61,14 @@ class UserSpec extends Specification {
         }
         case _ => failure("Couldn't create a user")
       }
+
+      User.getByEmail("some.one@example.com") map {
+        case Some(user:User) => {
+          user.id    mustEqual 1 
+          user.email mustEqual "some.one@example.com"
+        }
+        case _ => failure("Didn't persist user")
+      }
     }
   }
 }
