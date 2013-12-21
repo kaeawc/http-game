@@ -27,11 +27,12 @@ class LogoutSpec extends Specification {
 
       cookies(response).get("auth") match {
         case Some(actual:Cookie) => {
-          actual.name mustEqual expected.name
-          actual.value mustEqual expected.value
-          actual.path mustEqual expected.path
-          actual.domain must beNone
-          actual.secure mustEqual expected.secure
+          actual.name     mustEqual expected.name
+          actual.value    mustEqual expected.value
+          actual.maxAge   mustEqual expected.maxAge
+          actual.path     mustEqual expected.path
+          actual.domain   must      beNone
+          actual.secure   mustEqual expected.secure
           actual.httpOnly mustEqual expected.httpOnly
         }
         case _ => failure("Should have responded with an expiration cookie.")
