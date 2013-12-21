@@ -13,3 +13,12 @@ trait Salt {
     salt
   }
 }
+
+object Salt extends Salt {
+
+  val saltByteSize = 16
+
+  def string(size:Int = saltByteSize) =
+    Hexadecimal.bytes2hex(createSalt(size))
+
+}
