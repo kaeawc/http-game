@@ -11,6 +11,17 @@ import ExecutionContext.Implicits.global
 
 class ImagesSpec extends Specification {
 
+  "Invalid image paths" should {
+
+    "always respond with NotFound" in new App {
+
+      val response =
+        route(FakeRequest(GET, "/img")).get
+
+      status(response) mustEqual 404
+    }
+  }
+
   "/img/logo.png" should {
 
     "load logo image" in new App {

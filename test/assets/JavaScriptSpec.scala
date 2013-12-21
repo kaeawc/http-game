@@ -11,6 +11,17 @@ import ExecutionContext.Implicits.global
 
 class JavaScriptSpec extends Specification {
 
+  "Invalid JavaScript paths" should {
+
+    "always respond with NotFound" in new App {
+
+      val response =
+        route(FakeRequest(GET, "/js")).get
+
+      status(response) mustEqual 404
+    }
+  }
+
   "/js/jquery-2.0.3.min.js" should {
 
     "load JQuery" in new App {

@@ -11,6 +11,17 @@ import ExecutionContext.Implicits.global
 
 class StyleSheetSpec extends Specification {
 
+  "Invalid StyleSheet paths" should {
+
+    "always respond with NotFound" in new App {
+
+      val response =
+        route(FakeRequest(GET, "/css")).get
+
+      status(response) mustEqual 404
+    }
+  }
+
   "/css/main.css" should {
 
     "load main style sheet" in new App {

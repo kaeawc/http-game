@@ -11,6 +11,17 @@ import ExecutionContext.Implicits.global
 
 class FontsSpec extends Specification {
 
+  "Invalid Font paths" should {
+
+    "always respond with NotFound" in new App {
+
+      val response =
+        route(FakeRequest(GET, "/fonts")).get
+
+      status(response) mustEqual 404
+    }
+  }
+
   "/fonts/glyphicons-halflings-regular.eot" should {
 
     "load main style sheet" in new App {
