@@ -156,7 +156,7 @@ object User {
 
         val hashedPassword:String = crypto.PBKDF2.hash(password,user.salt)
 
-        if(password == user.password)
+        if(hashedPassword == user.password)
           Some(user)
         else
           None

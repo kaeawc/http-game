@@ -1,4 +1,4 @@
-package models
+package controllers.auth
 
 import test._
 
