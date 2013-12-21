@@ -28,7 +28,20 @@ object Login extends Controller {
         val (email,password) = form.get
 
         User.authenticate(email, password) map {
-          case Some(user:User) => Accepted(user.toPublic)
+          case Some(user:User) => {
+
+            val cookie = new Cookie(
+              name        = "auth",
+              value       = encrypt(user.id),
+              maxAge      = Some(31536000),
+              path        = "/",
+              domain      = None,
+              secure      = false,
+              httpOnly    = true
+            )
+
+            Accepted(user.toPublic).withCookies(cookie)
+          }
           case _ => Unauthorized(Json.obj("reason" -> "Could not authenticate User."))
         }
       }
