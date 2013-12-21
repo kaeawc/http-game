@@ -19,7 +19,7 @@ case class User(
   email    : String,
   password : String,
   salt     : String,
-  created  : Date
+  created  : Date = now
 ) {
 
   def toPublic = Json.obj(
@@ -104,7 +104,7 @@ object User {
     val salt              = crypto.PBKDF2.createSalt()
     val hashedPassword    = crypto.PBKDF2.hash(password,salt)
     val storedSalt:String = salt
-    val created           = new Date()
+    val created           = now
 
     getByEmail(email) map {
       case Some(user:User) => {

@@ -18,7 +18,7 @@ case class Character(
   id       : Long,
   name     : String,
   user     : Long,
-  created  : Date
+  created  : Date = now
 )
 
 object Character {
@@ -40,7 +40,6 @@ object Character {
             c.id,
             c.name,
             c.user,
-            c.salt,
             c.created
           FROM character c
           WHERE id = {id};
@@ -51,7 +50,7 @@ object Character {
     }
   }
 
-  def getByName(name:String) = Future {
+  def getByUser(user:Long) = Future {
     DB.withConnection { implicit connection =>
       SQL(
         """
@@ -59,13 +58,12 @@ object Character {
             c.id,
             c.name,
             c.user,
-            c.salt,
             c.created
           FROM character c
-          WHERE name = {name};
+          WHERE user = {user};
         """
       ).on(
-        'name -> name
+        'user -> user
       ).as(characters *)
     }
   }
@@ -89,7 +87,7 @@ object Character {
 
   def create(name:String,user:Long) = {
 
-    val created           = new Date()
+    val created = now
 
     Future {
       DB.withConnection { implicit connection =>
