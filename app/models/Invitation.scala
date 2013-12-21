@@ -8,6 +8,8 @@ import play.api.db.DB
 import play.api.Play.current
 import play.api.libs.json._
 
+import java.util.Date
+
 import scala.concurrent.{Future,ExecutionContext}
 
 import ExecutionContext.Implicits.global
@@ -27,9 +29,18 @@ object Invitation {
     long("id") ~
     str("code") ~
     long("userFrom") ~
-    date("created") map {
-      case        id~code~userFrom~created =>
-        Invitation(id,code,userFrom,new DateTime(created))
+    date("created") ~
+    date("expires") ~
+    get[Option[Date]]("used") map {
+      case        id~code~userFrom~created~expires~used => {
+
+        val usedOn = used match {
+          case Some(used:Date) => Some(new DateTime(used))
+          case _ => None
+        }
+
+        Invitation(id,code,userFrom,new DateTime(created),new DateTime(expires),usedOn)
+      }
     }
 
   def getById(id:Long) = Future {
@@ -37,11 +48,13 @@ object Invitation {
       SQL(
         """
           SELECT
-            c.id,
-            c.code,
-            c.userFrom,
-            c.created
-          FROM invitation c
+            i.id,
+            i.code,
+            i.userFrom,
+            i.created,
+            i.expires,
+            i.used
+          FROM invitation i
           WHERE id = {id};
         """
       ).on(
@@ -55,11 +68,13 @@ object Invitation {
       SQL(
         """
           SELECT
-            c.id,
-            c.code,
-            c.userFrom,
-            c.created
-          FROM invitation c
+            i.id,
+            i.code,
+            i.userFrom,
+            i.created,
+            i.expires,
+            i.used
+          FROM invitation i
           WHERE userFrom = {userFrom};
         """
       ).on(
@@ -73,7 +88,7 @@ object Invitation {
       val result = SQL(
         """
           SELECT COUNT(1) count
-          FROM invitation c;
+          FROM invitation i;
         """
       ).apply()
 
@@ -88,6 +103,7 @@ object Invitation {
   def create(userFrom:Long) = {
 
     val created = now
+    val expires = created.plusWeeks(1)
     val code = crypto.Salt.string()
 
     Future {
@@ -97,17 +113,20 @@ object Invitation {
             INSERT INTO invitation (
               code,
               userFrom,
-              created
+              created,
+              expires
             ) VALUES (
               {code},
               {userFrom},
-              {created}
+              {created},
+              {expires}
             );
           """
         ).on(
           'code     -> code,
           'userFrom -> userFrom,
-          'created  -> created.toDate
+          'created  -> created.toDate,
+          'expires  -> expires.toDate
         ).executeInsert()
       }
     } map {
@@ -116,7 +135,8 @@ object Invitation {
           id,
           code,
           userFrom,
-          created
+          created,
+          expires
         ))
       case _ => {
         Logger.warn("Invitation wasn't created")

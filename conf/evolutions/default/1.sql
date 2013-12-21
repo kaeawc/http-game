@@ -16,6 +16,15 @@ CREATE TABLE character (
   created   DATETIME     NOT NULL
 );
 
+CREATE TABLE invitation (
+  id        BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  code      VARCHAR(255) NOT NULL,
+  userFrom  BIGINT       NOT NULL,
+  created   DATETIME     NOT NULL,
+  expires   DATETIME     NOT NULL,
+  used      DATETIME     NULL
+);
+
 CREATE TABLE user_session (
   id        BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
   user      BIGINT       NOT NULL,
