@@ -54,7 +54,7 @@ class CharacterSpec extends Specification {
 
       actual.head match {
         case actual:Character => {
-          dateFormat.format(actual.created) mustEqual dateFormat.format(expected.created)
+          actual mustEqual expected
         }
         case _ => failure("Couldn't retrieve the characters who matches this user address.")
       }

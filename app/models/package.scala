@@ -1,10 +1,17 @@
+
+import anorm._
+import anorm.SqlParser._
+
 import java.util._
 import java.text.SimpleDateFormat
 
 package object models {
+
+  type DateTime = org.joda.time.DateTime
+
   val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 
-  def now = utc(new Date)
+  def now = new DateTime(utc(new Date))
 
   def utc(date:Date) = {
     val tz = TimeZone.getDefault()
@@ -20,6 +27,7 @@ package object models {
         ret = dstDate
       }
     }
+
     ret
   }
 }

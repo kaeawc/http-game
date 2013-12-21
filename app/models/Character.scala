@@ -8,8 +8,6 @@ import play.api.db.DB
 import play.api.Play.current
 import play.api.libs.json._
 
-import java.util.Date
-
 import scala.concurrent.{Future,ExecutionContext}
 
 import ExecutionContext.Implicits.global
@@ -18,7 +16,7 @@ case class Character(
   id       : Long,
   name     : String,
   user     : Long,
-  created  : Date = now
+  created  : DateTime = now
 )
 
 object Character {
@@ -29,7 +27,7 @@ object Character {
     long("user") ~
     date("created") map {
       case        id~name~user~created =>
-        Character(id,name,user,created)
+        Character(id,name,user,new DateTime(created))
     }
 
   def getById(id:Long) = Future {
@@ -106,7 +104,7 @@ object Character {
         ).on(
           'name    -> name,
           'user    -> user,
-          'created -> created
+          'created -> created.toDate
         ).executeInsert()
       }
     } map {

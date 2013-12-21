@@ -8,8 +8,6 @@ import play.api.db.DB
 import play.api.Play.current
 import play.api.libs.json._
 
-import java.util.Date
-
 import scala.concurrent.{Future,ExecutionContext}
 
 import ExecutionContext.Implicits.global
@@ -19,7 +17,7 @@ case class User(
   email    : String,
   password : String,
   salt     : String,
-  created  : Date = now
+  created  : DateTime = now
 ) {
 
   def toPublic = Json.obj(
@@ -41,7 +39,7 @@ object User {
     str("salt") ~
     date("created") map {
       case   id~email~password~salt~created =>
-        User(id,email,password,salt,created)
+        User(id,email,password,salt,new DateTime(created))
     }
 
   def getById(id:Long) = Future {
@@ -131,7 +129,7 @@ object User {
             'email    -> email,
             'password -> hashedPassword,
             'salt     -> storedSalt,
-            'created  -> created
+            'created  -> created.toDate
           ).executeInsert()
         }
       }
