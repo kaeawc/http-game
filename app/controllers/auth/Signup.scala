@@ -51,7 +51,7 @@ object Signup extends Controller {
         }
       }
       case _ =>
-        Future { BadRequest(Json.obj("reason" -> "Invalid request to Login")) }
+        Future { BadRequest(Json.obj("reason" -> "Invalid request to Signup")) }
     }
   }
 }
