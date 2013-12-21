@@ -1,5 +1,6 @@
-@(content:Html)
+@(content:Html,user:Option[User])
 <body>
+  @navigation(user)
   @content
   @scripts()
 </body>
