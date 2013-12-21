@@ -61,20 +61,7 @@ object Signup extends Controller {
         val signup = form.get
 
         User.create(signup.email, signup.passwords._1) map {
-          case Some(user:User) => {
-
-            val cookie = new Cookie(
-              name        = "auth",
-              value       = encrypt(user.id),
-              maxAge      = Some(31536000),
-              path        = "/",
-              domain      = None,
-              secure      = false,
-              httpOnly    = true
-            )
-
-            Created(user.toPublic).withCookies(cookie)
-          }
+          case Some(user:User) => Created(user.toPublic).withCookies(authorizedCookie(user))
           case _ => InternalServerError(Json.obj("reason" -> "Could not create a User"))
         }
       }
