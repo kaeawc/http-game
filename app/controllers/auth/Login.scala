@@ -12,22 +12,25 @@ import ExecutionContext.Implicits.global
 
 object Login extends Controller {
 
+  type LoginForm = Form[forms.Login]
+
   val form = Form(
-    tuple(
+    mapping(
       "email" -> email,
       "password" -> text
-  ))
+    )(forms.Login.apply)(forms.Login.unapply)
+  )
 
   def post = Action.async {
 
     implicit request =>
 
     form.bindFromRequest match {
-      case form:Form[(String,String)] if !form.hasErrors => {
+      case form:LoginForm if !form.hasErrors => {
 
-        val (email,password) = form.get
+        val login = form.get
 
-        User.authenticate(email, password) map {
+        User.authenticate(login.email, login.password) map {
           case Some(user:User) => {
 
             val cookie = new Cookie(
