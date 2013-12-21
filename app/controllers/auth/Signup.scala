@@ -12,10 +12,10 @@ import ExecutionContext.Implicits.global
 
 object Signup extends Controller {
 
-  type SignupForm = forms.Signup
+  type SignupForm = Form[forms.Signup]
 
   val form = Form(
-    tuple(
+    mapping(
       "email" -> email,
       "password" -> text,
       "retyped" -> text,
