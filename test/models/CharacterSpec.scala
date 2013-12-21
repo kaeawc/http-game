@@ -11,22 +11,28 @@ class CharacterSpec extends Specification {
 
     "return a single character" in new App {
 
-      sync(Character.create("Some Character Name",1)) match {
-        case Some(expected:Character) => {
-          Character.getById(1) map {
-            case Some(actual:Character) => {
-              expected mustEqual actual
-            }
-            case _ => failure("Couldn't retrieve the character who matches this user address.")
-          }
+      val created = sync { Character.create("Some Character Name",1) }
+
+      val actual = created match {
+        case Some(created:Character) => sync {
+          Character.getById(1)
         }
         case _ => failure("Couldn't create a character")
+      }
+
+      actual match {
+        case Some(actual:Character) => {
+          actual.id   mustEqual 1
+          actual.name mustEqual "Some Character Name"
+          actual.user mustEqual 1
+        }
+        case _ => failure("Couldn't retrieve the character who matches this user address.")
       }
     }
 
     "return nothing if the character does not exist" in new App {
 
-      Character.getById(1) map {
+      sync { Character.getById(1) } match {
         case Some(character:Character) => failure("This character should not exist.")
         case _ => success
       }

@@ -10,22 +10,27 @@ class UserSpec extends Specification {
 
     "return a single user" in new App {
 
-      User.create("some.one@example.com","asdfasdf") map {
-        case Some(expected:User) => {
-          User.getById(1) map {
-            case Some(actual:User) => {
-              expected mustEqual actual
-            }
-            case _ => failure("Couldn't retrieve the user who matches this email address.")
-          }
+      val created = sync { User.create("some.one@example.com","asdfasdf") }
+
+      val actual = created match {
+        case Some(expected:User) => sync {
+          User.getById(1)
         }
         case _ => failure("Couldn't create a user")
+      }
+
+      actual match {
+        case Some(actual:User) => {
+          actual.id    mustEqual 1
+          actual.email mustEqual "some.one@example.com"
+        }
+        case _ => failure("Couldn't retrieve the user by the given id.")
       }
     }
 
     "return nothing if the user does not exist" in new App {
 
-      User.getById(1) map {
+      sync { User.getById(1) } match {
         case Some(user:User) => failure("This user should not exist.")
         case _ => success
       }
@@ -36,17 +41,29 @@ class UserSpec extends Specification {
 
     "return a single user when the email exists" in new App {
 
-      User.create("some.one@example.com","asdfasdf") map {
-        case Some(expected:User) => {
-          User.getByEmail("some.one@example.com") map {
-            case Some(actual:User) => {
-              expected mustEqual actual
-            }
-            case _ => failure("Couldn't retrieve the user who matches this email address.")
-          }
+      val created = sync { User.create("some.one@example.com","asdfasdf") }
+
+      val actual = created match {
+        case Some(created:User) => sync {
+          User.getByEmail("some.one@example.com")
         }
         case _ => failure("Couldn't create a user")
       }
+
+      actual match {
+        case Some(actual:User) => {
+          actual mustEqual created.get
+        }
+        case _ => failure("Couldn't retrieve the user who matches this email address.")
+      }
+    }
+
+    "return nothing when no User has that email address" in new App {
+
+      val actual = sync { User.getByEmail("some.one@example.com") }
+
+      if (actual.isDefined)
+        failure("This user shouldn't exist.")
     }
   }
 
@@ -54,21 +71,42 @@ class UserSpec extends Specification {
 
     "create a single user when the email does not exist" in new App {
 
-      User.create("some.one@example.com","asdfasdf") map {
-        case Some(user:User) => {
-          user.id    mustEqual 1 
-          user.email mustEqual "some.one@example.com"
+      val created = sync { User.create("some.one@example.com","asdfasdf") }
+
+      created match {
+        case Some(actual:User) => {
+          actual.id    mustEqual 1 
+          actual.email mustEqual "some.one@example.com"
         }
         case _ => failure("Couldn't create a user")
       }
 
-      User.getByEmail("some.one@example.com") map {
-        case Some(user:User) => {
-          user.id    mustEqual 1 
-          user.email mustEqual "some.one@example.com"
+      sync { User.getByEmail("some.one@example.com") } match {
+        case Some(actual:User) => {
+          actual.id    mustEqual 1 
+          actual.email mustEqual "some.one@example.com"
         }
         case _ => failure("Didn't persist user")
       }
+    }
+
+    "do nothing if the given email already exists" in new App {
+
+      val existing = sync { User.create("already.exists@example.com","asdfasdf") }
+
+      sync { User.getByEmail("already.exists@example.com") } match {
+        case Some(actual:User) => {
+          actual.id    mustEqual 1 
+          actual.email mustEqual "already.exists@example.com"
+        }
+        case _ => failure("Didn't persist user")
+      }
+
+      val attempted = sync { User.create("already.exists@example.com","asdfasdf") }
+
+      if (attempted.isDefined)
+        failure("Should not have created a new User -- one already exists with this email address.")
+
     }
   }
 }
