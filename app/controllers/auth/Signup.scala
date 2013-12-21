@@ -1,6 +1,6 @@
 package controllers.auth
 
-import models.User
+import models._
 
 import play.api.mvc._
 import play.api.data._
@@ -32,23 +32,31 @@ object Signup extends Controller {
 
         val signup = form.get
 
-        User.create(signup.email, signup.password) map {
-          case Some(user:User) => {
+        Invitation.getByCode(signup.invitation) flatMap {
+          case Some(invitation:Invitation) => {
 
-            val cookie = new Cookie(
-              name        = "auth",
-              value       = encrypt(user.id),
-              maxAge      = Some(31536000),
-              path        = "/",
-              domain      = None,
-              secure      = false,
-              httpOnly    = true
-            )
+            User.create(signup.email, signup.password) map {
+              case Some(user:User) => {
 
-            Created(user.toPublic).withCookies(cookie)
+                val cookie = new Cookie(
+                  name        = "auth",
+                  value       = encrypt(user.id),
+                  maxAge      = Some(31536000),
+                  path        = "/",
+                  domain      = None,
+                  secure      = false,
+                  httpOnly    = true
+                )
+
+                Created(user.toPublic).withCookies(cookie)
+              }
+              case _ => InternalServerError(Json.obj("reason" -> "Could not create a User."))
+            }
           }
-          case _ => InternalServerError(Json.obj("reason" -> "Could not create a User."))
+          case _ =>
+            Future { Unauthorized(Json.obj("reason" -> "Could not authenticate User.")) }
         }
+
       }
       case _ =>
         Future { BadRequest(Json.obj("reason" -> "Invalid request to Signup")) }

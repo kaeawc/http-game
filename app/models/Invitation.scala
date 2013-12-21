@@ -83,6 +83,26 @@ object Invitation {
     }
   }
 
+  def getByCode(code:String) = Future {
+    DB.withConnection { implicit connection =>
+      SQL(
+        """
+          SELECT
+            i.id,
+            i.code,
+            i.userFrom,
+            i.created,
+            i.expires,
+            i.used
+          FROM invitation i
+          WHERE code = {code};
+        """
+      ).on(
+        'code -> code
+      ).as(invitations.singleOpt)
+    }
+  }
+
   def countAll = Future {
     DB.withConnection { implicit connection =>
       val result = SQL(
